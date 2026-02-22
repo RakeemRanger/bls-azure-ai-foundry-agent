@@ -94,11 +94,11 @@ This repository demonstrates expertise in:
 | Document | Purpose |
 |----------|---------|
 | [docs/REPOSITORY_STRUCTURE.md](docs/REPOSITORY_STRUCTURE.md) | **Start here** - Guide to finding everything in the repo |
-| [docs/TESTING_DOCUMENTATION_INDEX.md](docs/TESTING_DOCUMENTATION_INDEX.md) | Unit tests, integration tests, pytest |
+| [docs/test/TESTING_DOCUMENTATION_INDEX.md](docs/test/TESTING_DOCUMENTATION_INDEX.md) | Unit tests, integration tests, pytest |
+| [docs/deployment/GITHUB_ACTIONS.md](docs/deployment/GITHUB_ACTIONS.md) | CI/CD workflows, validation pipelines |
+| [docs/deployment/PRIVATE_ENDPOINT_DEPLOYMENT.md](docs/deployment/PRIVATE_ENDPOINT_DEPLOYMENT.md) | Deployment guide, security, private endpoints |
+| [docs/infra/QUEUE_ARCHITECTURE.md](docs/infra/QUEUE_ARCHITECTURE.md) | Queue patterns, architecture design |
 | [docs/PR_WORKFLOW.md](docs/PR_WORKFLOW.md) | PR process, automated checks, review workflow |
-| [docs/GITHUB_ACTIONS.md](docs/GITHUB_ACTIONS.md) | CI/CD workflows, validation pipelines |
-| [docs/PRIVATE_ENDPOINT_DEPLOYMENT.md](docs/PRIVATE_ENDPOINT_DEPLOYMENT.md) | Deployment guide, security, private endpoints |
-| [docs/QUEUE_ARCHITECTURE.md](docs/QUEUE_ARCHITECTURE.md) | Queue patterns, agent creation details |
 
 ## 🚀 Quick Start
 
@@ -134,7 +134,7 @@ az login
 az account set --subscription <subscription-id>
 
 # See deployment guide for complete steps
-cat docs/PRIVATE_ENDPOINT_DEPLOYMENT.md
+cat docs/deployment/PRIVATE_ENDPOINT_DEPLOYMENT.md
 
 # Deploy
 python3 scripts/deploy.py --environment sweden --location swedencentral
@@ -159,7 +159,7 @@ Foundry Agent → sk-request-queue → Function (SK) → sk-response-queue → F
 - Internal routing (no public access)
 - Based on [Semantic Kernel SDK](https://github.com/microsoft/semantic-kernel)
 
-See [docs/QUEUE_ARCHITECTURE.md](docs/QUEUE_ARCHITECTURE.md) for details.
+See [docs/infra/QUEUE_ARCHITECTURE.md](docs/infra/QUEUE_ARCHITECTURE.md) for details.
 
 ## 💬 Queue Message Format
 
@@ -182,7 +182,7 @@ Submit JSON to `agent-creation-queue`:
 }
 ```
 
-**See [docs/PRIVATE_ENDPOINT_DEPLOYMENT.md](docs/PRIVATE_ENDPOINT_DEPLOYMENT.md) for message submission methods.**
+**See [docs/deployment/PRIVATE_ENDPOINT_DEPLOYMENT.md](docs/deployment/PRIVATE_ENDPOINT_DEPLOYMENT.md) for message submission methods.**
 
 ## 🔐 Security by Default
 
@@ -214,7 +214,7 @@ func start --verbose
 
 **Coverage Targets: 80%+ overall, 85%+ for foundry_agents**
 
-See [docs/TESTING_DOCUMENTATION_INDEX.md](docs/TESTING_DOCUMENTATION_INDEX.md) for full guide.
+See [docs/test/TESTING_DOCUMENTATION_INDEX.md](docs/test/TESTING_DOCUMENTATION_INDEX.md) for full guide.
 
 ## 🔄 Automated CI/CD
 
@@ -224,7 +224,7 @@ All workflows run automatically (must pass to merge):
 2. **validate-functions.yml** - Python syntax, imports, unit tests, coverage
 3. **pr-checks.yml** - Flake8, unit tests on all PRs
 
-See [docs/GITHUB_ACTIONS.md](docs/GITHUB_ACTIONS.md) for details.
+See [docs/deployment/GITHUB_ACTIONS.md](docs/deployment/GITHUB_ACTIONS.md) for details.
 
 ## 📊 Repository Stats
 

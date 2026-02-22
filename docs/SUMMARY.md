@@ -170,10 +170,10 @@ az monitor app-insights metrics show --app <name> --metrics requests
 
 ## 🎓 Learning Resources
 
-1. **Queue Architecture**: [docs/QUEUE_ARCHITECTURE.md](docs/QUEUE_ARCHITECTURE.md)
-2. **Security**: [docs/PRIVATE_QUEUE_ACCESS.md](docs/PRIVATE_QUEUE_ACCESS.md)
-3. **Quick Reference**: [docs/QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md)
-4. **Azure AI Projects**: [src/](../src/)
+1. **Queue Architecture**: [infra/QUEUE_ARCHITECTURE.md](infra/QUEUE_ARCHITECTURE.md)
+2. **Security**: [infra/PRIVATE_QUEUE_ACCESS.md](infra/PRIVATE_QUEUE_ACCESS.md)
+3. **Quick Reference**: [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
+4. **Azure AI & Semantic Kernel**: [../foundry_agents/](../foundry_agents/) and [../core/](../core/)
 5. **SK Agent Example**: [examples/sk_agent_request_response.py](../examples/sk_agent_request_response.py)
 
 ## 📝 Summary

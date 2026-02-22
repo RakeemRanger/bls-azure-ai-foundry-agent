@@ -139,8 +139,8 @@ func azure functionapp publish <function-app-name>
 
 ## 📖 Documentation
 
-- **Full Architecture**: [docs/QUEUE_ARCHITECTURE.md](docs/QUEUE_ARCHITECTURE.md)
-- **Private Access**: [docs/PRIVATE_QUEUE_ACCESS.md](docs/PRIVATE_QUEUE_ACCESS.md)
+- **Full Architecture**: [infra/QUEUE_ARCHITECTURE.md](infra/QUEUE_ARCHITECTURE.md)
+- **Private Access**: [infra/PRIVATE_QUEUE_ACCESS.md](infra/PRIVATE_QUEUE_ACCESS.md)
 - **Main README**: [README.md](../README.md)
 
 ## 🔗 Storage Account Connection
@@ -189,5 +189,5 @@ az role assignment create \
 ## 📞 Support
 
 - **Errors**: Check Application Insights logs
-- **Architecture Questions**: See [QUEUE_ARCHITECTURE.md](docs/QUEUE_ARCHITECTURE.md)
-- **Security**: See [PRIVATE_QUEUE_ACCESS.md](docs/PRIVATE_QUEUE_ACCESS.md)
+- **Architecture Questions**: See [infra/QUEUE_ARCHITECTURE.md](infra/QUEUE_ARCHITECTURE.md)
+- **Security**: See [infra/PRIVATE_QUEUE_ACCESS.md](infra/PRIVATE_QUEUE_ACCESS.md)

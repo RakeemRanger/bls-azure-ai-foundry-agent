@@ -15,31 +15,46 @@ local.settings.json.template       # Local development template
 .gitignore                         # Git ignore rules
 ```
 
-## 📚 Documentation (`docs/`)
+## 📚 Documentation (`docs/`) - Modular Organization
 
-**Everything you need to learn about the project:**
+**Everything you need to learn about the project, organized by topic:**
 
+### 🧪 Testing (`docs/test/`)
+| File | Purpose |
+|------|---------|
+| [docs/test/TESTING_DOCUMENTATION_INDEX.md](test/TESTING_DOCUMENTATION_INDEX.md) | Complete testing guide index |
+| [docs/test/TESTING.md](test/TESTING.md) | Unit & integration testing details |
+| [docs/test/TESTING_QUICK_REFERENCE.md](test/TESTING_QUICK_REFERENCE.md) | Quick test commands cheat sheet |
+
+### 🚀 Deployment (`docs/deployment/`)
+| File | Purpose |
+|------|---------|
+| [docs/deployment/GITHUB_ACTIONS.md](deployment/GITHUB_ACTIONS.md) | CI/CD workflow automation |
+| [docs/deployment/DEPLOYMENT.md](deployment/DEPLOYMENT.md) | Deployment guidance |
+| [docs/deployment/PRIVATE_ENDPOINT_DEPLOYMENT.md](deployment/PRIVATE_ENDPOINT_DEPLOYMENT.md) | Secure deployment with private endpoints |
+
+### 🏗️ Infrastructure (`docs/infra/`)
+| File | Purpose |
+|------|---------|
+| [docs/infra/QUEUE_ARCHITECTURE.md](infra/QUEUE_ARCHITECTURE.md) | Queue patterns & architecture |
+| [docs/infra/PRIVATE_QUEUE_ACCESS.md](infra/PRIVATE_QUEUE_ACCESS.md) | Queue access patterns |
+
+### 📖 General Documentation
 | File | Purpose |
 |------|---------|
 | [docs/README.md](../README.md) | Main project README (in root) |
-| [docs/TESTING_DOCUMENTATION_INDEX.md](TESTING_DOCUMENTATION_INDEX.md) | Complete testing guide index |
-| [docs/TESTING.md](TESTING.md) | Unit & integration testing details |
-| [docs/TESTING_QUICK_REFERENCE.md](TESTING_QUICK_REFERENCE.md) | Quick test commands cheat sheet |
-| [docs/GITHUB_ACTIONS.md](GITHUB_ACTIONS.md) | CI/CD workflow documentation |
+| [docs/REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md) | **You are here** |
 | [docs/PR_WORKFLOW.md](PR_WORKFLOW.md) | Pull request process & approval |
-| [docs/PRIVATE_ENDPOINT_DEPLOYMENT.md](PRIVATE_ENDPOINT_DEPLOYMENT.md) | Deployment guide & security |
-| [docs/DEPLOYMENT.md](DEPLOYMENT.md) | Alternative deployment docs |
-| [docs/QUEUE_ARCHITECTURE.md](QUEUE_ARCHITECTURE.md) | Queue patterns & architecture |
 | [docs/QUICK_REFERENCE.md](QUICK_REFERENCE.md) | Quick commands reference |
 | [docs/AGENT_CREATION_EXAMPLES.md](AGENT_CREATION_EXAMPLES.md) | Agent creation code examples |
-| [docs/PRIVATE_QUEUE_ACCESS.md](PRIVATE_QUEUE_ACCESS.md) | Queue access patterns |
+| [docs/SUMMARY.md](SUMMARY.md) | Project summary & overview |
 
 **How to use docs:**
-- **New to the project?** Start with README.md, then [docs/QUEUE_ARCHITECTURE.md](QUEUE_ARCHITECTURE.md)
-- **Want to write tests?** Read [docs/TESTING_DOCUMENTATION_INDEX.md](TESTING_DOCUMENTATION_INDEX.md)
+- **New to the project?** Start with [README.md](../README.md), then [docs/infra/QUEUE_ARCHITECTURE.md](infra/QUEUE_ARCHITECTURE.md)
+- **Want to write tests?** Read [docs/test/TESTING_DOCUMENTATION_INDEX.md](test/TESTING_DOCUMENTATION_INDEX.md)
 - **Contributing code?** Follow [docs/PR_WORKFLOW.md](PR_WORKFLOW.md)
-- **Deploying infrastructure?** See [docs/PRIVATE_ENDPOINT_DEPLOYMENT.md](PRIVATE_ENDPOINT_DEPLOYMENT.md)
-- **Need quick commands?** Check [docs/TESTING_QUICK_REFERENCE.md](TESTING_QUICK_REFERENCE.md)
+- **Deploying infrastructure?** See [docs/deployment/PRIVATE_ENDPOINT_DEPLOYMENT.md](deployment/PRIVATE_ENDPOINT_DEPLOYMENT.md)
+- **Need quick commands?** Check [docs/test/TESTING_QUICK_REFERENCE.md](test/TESTING_QUICK_REFERENCE.md)
 
 ## 🛠️ Scripts (`scripts/`)
 
@@ -174,22 +189,22 @@ pytest tests/test_foundry_agents.py -v
 ### I want to...
 
 **Understand the architecture**
-→ [docs/QUEUE_ARCHITECTURE.md](QUEUE_ARCHITECTURE.md)
+→ [docs/infra/QUEUE_ARCHITECTURE.md](infra/QUEUE_ARCHITECTURE.md)
 
 **Write and run tests**
-→ [docs/TESTING_DOCUMENTATION_INDEX.md](TESTING_DOCUMENTATION_INDEX.md)
+→ [docs/test/TESTING_DOCUMENTATION_INDEX.md](test/TESTING_DOCUMENTATION_INDEX.md)
 
 **Deploy infrastructure**
-→ [docs/PRIVATE_ENDPOINT_DEPLOYMENT.md](PRIVATE_ENDPOINT_DEPLOYMENT.md)
+→ [docs/deployment/PRIVATE_ENDPOINT_DEPLOYMENT.md](deployment/PRIVATE_ENDPOINT_DEPLOYMENT.md)
 
 **Contribute code**
 → [docs/PR_WORKFLOW.md](PR_WORKFLOW.md)
 
 **Check CI/CD setup**
-→ [docs/GITHUB_ACTIONS.md](GITHUB_ACTIONS.md)
+→ [docs/deployment/GITHUB_ACTIONS.md](deployment/GITHUB_ACTIONS.md)
 
 **Find quick commands**
-→ [docs/TESTING_QUICK_REFERENCE.md](TESTING_QUICK_REFERENCE.md) or [docs/QUICK_REFERENCE.md](QUICK_REFERENCE.md)
+→ [docs/test/TESTING_QUICK_REFERENCE.md](test/TESTING_QUICK_REFERENCE.md) or [docs/QUICK_REFERENCE.md](QUICK_REFERENCE.md)
 
 **See code examples**
 → [examples/](../examples/) or [docs/AGENT_CREATION_EXAMPLES.md](AGENT_CREATION_EXAMPLES.md)
@@ -199,9 +214,13 @@ pytest tests/test_foundry_agents.py -v
 | Directory | What | When to use |
 |-----------|------|------------|
 | **root** | Essential project files | Starting point |
-| **docs/** | Comprehensive documentation | Learning & reference |
+| **docs/** | Modular documentation (test/, deployment/, infra/) | Learning & reference |
+| **docs/test/** | Testing guides and references | Writing tests |
+| **docs/deployment/** | CI/CD and deployment docs | Deployment tasks |
+| **docs/infra/** | Architecture and infrastructure patterns | Architecture decisions |
 | **scripts/** | Automation tools | Deployment & setup |
 | **examples/** | Reference implementations | Code samples |
+| **core/** | Semantic Kernel orchestration | SK agent implementation |
 | **.github/** | CI/CD & community | Workflows & PRs |
 | **infra/** | Infrastructure templates | Deployment |
 | **foundry_agents/** | Source code | Reading code |
@@ -211,3 +230,4 @@ pytest tests/test_foundry_agents.py -v
 
 **Last Updated**: February 22, 2026
 **Repository Structure**: Clean & organized for scalability
+**Semantic Kernel**: Logic centralized in core/ with kernel.py
