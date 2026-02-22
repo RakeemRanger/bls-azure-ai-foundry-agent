@@ -63,7 +63,8 @@ jobs:
           python3 scripts/deploy.py \
             --environment ${{ steps.params.outputs.ENVIRONMENT }} \
             --location ${{ steps.params.outputs.LOCATION }} \
-            --infra-only
+            --infra-only \
+            --yes
       
       - name: Post deployment success
         if: success()
