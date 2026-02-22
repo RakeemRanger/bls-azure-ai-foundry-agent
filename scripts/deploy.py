@@ -8,6 +8,7 @@ import subprocess
 import json
 import argparse
 import sys
+import os
 from pathlib import Path
 from typing import Optional, List, Dict
 import time
@@ -202,10 +203,18 @@ def main():
     args = parser.parse_args()
     
     # Change to repository root (parent of scripts directory)
-    script_dir = Path(__file__).parent
-    repo_root = script_dir.parent
-    import os
+    # Using os.path for better compatibility across environments
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_root = os.path.dirname(script_dir)
+    
+    print_info(f"Script location: {script_dir}")
+    print_info(f"Changing to repo root: {repo_root}")
+    
     os.chdir(repo_root)
+    
+    print_info(f"Current working directory: {os.getcwd()}")
+    print_info(f"Bicep template path: {os.path.join(os.getcwd(), 'infra/main.bicep')}")
+    print()
     
     # Check Azure CLI
     check_azure_cli()
