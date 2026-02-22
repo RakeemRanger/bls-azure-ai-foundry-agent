@@ -60,12 +60,10 @@ jobs:
       - name: Deploy infrastructure
         run: |
           cd ${{ github.workspace }}
-          python3 deploy.py \
+          python3 scripts/deploy.py \
             --environment ${{ steps.params.outputs.ENVIRONMENT }} \
             --location ${{ steps.params.outputs.LOCATION }} \
-            --infra-only << EOF
-          y
-          EOF
+            --infra-only
       
       - name: Post deployment success
         if: success()
