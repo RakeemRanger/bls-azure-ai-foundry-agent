@@ -1,0 +1,19 @@
+# Sample models configuration for agent creation
+[
+  {
+    "name": "gpt-4.1",
+    "skuName": "GlobalStandard",
+    "capacity": 50,
+    "format": "OpenAI",
+    "modelName": "gpt-4.1",
+    "version": "2025-04-14"
+  },
+  {
+    "name": "text-embedding-3-small",
+    "skuName": "Standard",
+    "capacity": 120,
+    "format": "OpenAI",
+    "modelName": "text-embedding-3-small",
+    "version": "1"
+  }
+]

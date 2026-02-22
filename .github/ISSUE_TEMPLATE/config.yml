@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Semantic Kernel Documentation
+    url: https://learn.microsoft.com/en-us/semantic-kernel/overview/
+    about: Learn about Semantic Kernel integration
+  - name: Azure AI Foundry Documentation
+    url: https://learn.microsoft.com/en-us/azure/ai-services/
+    about: Azure AI Services documentation
+  - name: Azure Functions Documentation
+    url: https://learn.microsoft.com/en-us/azure/azure-functions/
+    about: Azure Functions and queue triggers

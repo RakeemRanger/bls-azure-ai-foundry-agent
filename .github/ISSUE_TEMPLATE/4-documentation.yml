@@ -1,0 +1,53 @@
+---
+name: Documentation Issue
+about: Report missing or unclear documentation
+title: "[DOCS] "
+labels: documentation
+assignees: RakeemRanger
+---
+
+## Documentation Gap
+What documentation is missing or unclear?
+
+## Location
+- [ ] README.md
+- [ ] TESTING.md
+- [ ] GITHUB_ACTIONS.md
+- [ ] PR_WORKFLOW.md
+- [ ] PRIVATE_ENDPOINT_DEPLOYMENT.md
+- [ ] TESTING_QUICK_REFERENCE.md
+- [ ] Other: (specify)
+
+## What's Missing or Unclear
+Describe what needs to be added or clarified:
+- Is a section missing?
+- Is an explanation unclear?
+- Are examples needed?
+- Is a diagram needed?
+
+## Affected Audience
+Who does this documentation affect?
+- Developers
+- DevOps/Infrastructure engineers
+- Code reviewers
+- New contributors
+
+## Suggested Content
+If you have ideas for what the documentation should include:
+
+```
+Suggested content here
+```
+
+## Related Code
+Link to relevant code sections:
+- File: `path/to/file.py`
+- Lines: 10-25
+
+## Priority
+- [ ] Critical - Blocks understanding or contribution
+- [ ] Important - Confusing but workable
+- [ ] Nice to have - Would improve clarity
+
+---
+**Note**: Good documentation helps everyone understand the project better!

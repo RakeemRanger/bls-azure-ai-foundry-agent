@@ -1,0 +1,101 @@
+name: Validate Infrastructure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/**'
+      - '.github/workflows/validate-infra.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'infra/**'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      id-token: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Azure login (OIDC)
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      - name: Validate Bicep templates
+        run: |
+          echo "🔍 Validating Bicep templates..."
+          
+          # Validate main template
+          az bicep build --file infra/main.bicep --outfile /tmp/main.json
+          echo "✅ Main template is valid"
+          
+          # Validate individual modules
+          for bicep_file in infra/**/*.bicep; do
+            echo "Validating: $bicep_file"
+            az bicep build --file "$bicep_file" --outfile /dev/null
+          done
+          
+          echo "✅ All Bicep templates are valid"
+      
+      - name: Validate deployment (dry-run)
+        run: |
+          echo "🔍 Running deployment validation (dry-run)..."
+          
+          az deployment sub validate \
+            --location swedencentral \
+            --template-file infra/main.bicep \
+            --parameters environmentType=sweden location=swedencentral \
+            --output json > /tmp/validation-result.json
+          
+          # Check for validation errors
+          ERRORS=$(jq '.properties.error' /tmp/validation-result.json)
+          
+          if [ "$ERRORS" != "null" ]; then
+            echo "❌ Validation failed:"
+            echo "$ERRORS" | jq .
+            exit 1
+          else
+            echo "✅ Deployment validation passed"
+          fi
+      
+      - name: Check for common issues
+        run: |
+          echo "🔍 Checking for common issues..."
+          
+          # Check for hardcoded values
+          if grep -r "TODO\|FIXME\|HACK" infra/ --include="*.bicep"; then
+            echo "⚠️  Found TODO/FIXME/HACK comments"
+          fi
+          
+          # Check for missing descriptions
+          if grep -r "^param " infra/ --include="*.bicep" | grep -v "@description"; then
+            echo "⚠️  Found parameters without descriptions"
+          fi
+          
+          echo "✅ Code quality checks passed"
+      
+      - name: Generate template summary
+        run: |
+          echo "📋 Infrastructure Template Summary"
+          echo "=================================="
+          echo ""
+          echo "**Bicep Files:**"
+          find infra -name "*.bicep" -type f | sort
+          echo ""
+          echo "**Lines of Code:**"
+          find infra -name "*.bicep" -type f -exec wc -l {} + | tail -1
+          echo ""
+          echo "**Module Dependencies:**"
+          grep "^module " infra/main.bicep | wc -l | xargs echo "Total modules:"

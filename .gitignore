@@ -47,6 +47,16 @@ logs/
 *.zip
 *.tar.gz
 
+# Local Deployment/Testing
+AzuriteConfig
+__azurite_db_table__.json
+deployment.zip
+*.squashfs
+
+# Deployment Scripts Output
+deploy*.log
+func-deploy*.log
+
 # OS
 Thumbs.db
 .Spotlight-V100

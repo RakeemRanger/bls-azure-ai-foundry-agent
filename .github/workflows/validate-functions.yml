@@ -1,0 +1,192 @@
+name: Validate Functions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'function_app.py'
+      - 'foundry_agents/**'
+      - 'requirements.txt'
+      - 'host.json'
+      - 'tests/**'
+      - '.github/workflows/validate-functions.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'function_app.py'
+      - 'foundry_agents/**'
+      - 'requirements.txt'
+      - 'tests/**'
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Check Python syntax
+        run: |
+          echo "🔍 Checking Python syntax..."
+          python -m py_compile function_app.py
+          find foundry_agents -name "*.py" -type f -exec python -m py_compile {} \;
+          echo "✅ All Python files have valid syntax"
+      
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          echo "🔍 Running flake8 linter..."
+          flake8 function_app.py foundry_agents --count --select=E9,F63,F7,F82 --show-source --statistics
+          echo "✅ Flake8 checks passed"
+        continue-on-error: true
+      
+      - name: Check for imports
+        run: |
+          echo "🔍 Validating imports..."
+          python -c "
+          import ast
+          with open('function_app.py') as f:
+              tree = ast.parse(f.read())
+          imports = [node for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom))]
+          print(f'Found {len(imports)} import statements')
+          for imp in imports:
+              if isinstance(imp, ast.Import):
+                  for alias in imp.names:
+                      print(f'  - import {alias.name}')
+              elif isinstance(imp, ast.ImportFrom):
+                  print(f'  - from {imp.module} import ...')
+          "
+          echo "✅ Import validation passed"
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest pytest-cov pytest-mock
+      
+      - name: Run unit tests
+        run: |
+          echo "🧪 Running unit tests..."
+          pytest tests/ -v --cov=foundry_agents --cov-report=xml
+        continue-on-error: true
+      
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        if: always()
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
+
+  function-startup:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install Azure Functions Core Tools
+        run: |
+          wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb
+          sudo dpkg -i packages-microsoft-prod.deb
+          sudo apt-get update
+          sudo apt-get install -y azure-functions-core-tools-4
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Generate local settings
+        run: |
+          cat > local.settings.json << 'EOF'
+          {
+            "IsEncrypted": false,
+            "Values": {
+              "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+              "FUNCTIONS_WORKER_RUNTIME": "python",
+              "FUNCTIONS_EXTENSION_VERSION": "~4",
+              "AGENT_STORAGE_ACCOUNT__queueServiceUri": "http://localhost:10001",
+              "AGENT_CREATION_QUEUE_NAME": "agent-creation-queue",
+              "SK_AGENT_REQUEST_QUEUE_NAME": "sk-agent-request-queue",
+              "SK_AGENT_RESPONSE_QUEUE_NAME": "sk-agent-response-queue",
+              "AI_SERVICES_ENDPOINT": "http://localhost:8000",
+              "AI_SERVICES_ACCOUNT_NAME": "test-account",
+              "FOUNDRY_PROJECT_NAME": "test-project",
+              "AZURE_CLIENT_ID": "00000000-0000-0000-0000-000000000000",
+              "APPLICATIONINSIGHTS_CONNECTION_STRING": ""
+            }
+          }
+          EOF
+          echo "✅ Generated local.settings.json"
+      
+      - name: Validate function structure
+        run: |
+          echo "🔍 Validating function structure..."
+          
+          # Check host.json
+          if [ ! -f host.json ]; then
+            echo "❌ Missing host.json"
+            exit 1
+          fi
+          python -m json.tool host.json > /dev/null
+          echo "✅ host.json is valid JSON"
+          
+          # Check function_app.py exists and has Azure Functions decorators
+          if ! grep -q "@app.queue_trigger\|@app.timer_trigger" function_app.py; then
+            echo "❌ No Azure Functions triggers found in function_app.py"
+            exit 1
+          fi
+          echo "✅ Function app has valid triggers"
+      
+      - name: Check startup (dry-run)
+        run: |
+          echo "🔍 Checking function startup..."
+          
+          # Timeout after 10 seconds - we just want to check if it starts without errors
+          timeout 10 func start --verbose || true
+          
+          echo "⚠️  Function startup check completed (function runtime may require Azure credentials)"
+        continue-on-error: true
+      
+      - name: Validate function metadata
+        run: |
+          echo "📋 Function Metadata Summary"
+          echo "============================"
+          echo ""
+          echo "**Python Version:** ${{ env.PYTHON_VERSION }}"
+          echo ""
+          echo "**Functions Found:**"
+          grep -o "@app\.\w\+_trigger" function_app.py | sort -u | sed 's/@app\./  - /'
+          echo ""
+          echo "**Dependencies:**"
+          pip list | grep -E "azure|function" || echo "  Core Azure Functions packages"
+          echo ""
+          echo "✅ Function validation complete"

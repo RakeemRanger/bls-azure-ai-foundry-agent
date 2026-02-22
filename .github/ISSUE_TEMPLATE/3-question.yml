@@ -1,0 +1,43 @@
+---
+name: Question / Discussion
+about: Ask a question about the codebase or architecture
+title: "[QUESTION] "
+labels: question
+assignees: RakeemRanger
+---
+
+## Question
+What is your question?
+
+## Context
+Provide relevant context about what you're trying to do.
+
+## What I've Already Tried
+Have you already researched or tried anything?
+- [ ] Checked README.md
+- [ ] Checked TESTING.md
+- [ ] Checked PR_WORKFLOW.md
+- [ ] Checked PRIVATE_ENDPOINT_DEPLOYMENT.md
+- [ ] Searched existing issues
+- [ ] Ran tests locally
+
+## Code Example
+If applicable, provide a code example:
+
+```python
+# Your code here
+```
+
+## Expected Vs Actual
+What did you expect to happen? What actually happened?
+
+## Environment
+- **Python Version**: 3.11
+- **Azure Region**: Sweden Central
+- **Module**: foundry_agents / function_app / infra
+
+---
+**Note**: Please check the documentation first:
+- [TESTING_DOCUMENTATION_INDEX.md](../../TESTING_DOCUMENTATION_INDEX.md)
+- [PRIVATE_ENDPOINT_DEPLOYMENT.md](../../PRIVATE_ENDPOINT_DEPLOYMENT.md)
+- [PR_WORKFLOW.md](../../PR_WORKFLOW.md)

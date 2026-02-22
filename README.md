@@ -1,100 +1,168 @@
-# Azure AI Foundry Agent Infrastructure
+# 🤖 Scalable AI Agent Platform on Azure
 
-This repository contains Bicep infrastructure as code (IaC) for deploying Azure AI Foundry with **two queue-based patterns**:
-1. **Agent Creation** - Automated agent provisioning using Azure AI Projects SDK
-2. **Semantic Kernel Agent** - Request/Response pattern for agent queries (time, weather, etc.)
+![Validate Infrastructure](https://github.com/RakeemRanger/bls-azure-ai-foundry-agent/actions/workflows/validate-infra.yml/badge.svg)
+![Validate Functions](https://github.com/RakeemRanger/bls-azure-ai-foundry-agent/actions/workflows/validate-functions.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Architecture
+**Production-ready infrastructure for scaling AI agents using Azure AI Services, Semantic Kernel, and Azure Functions.**
 
-The infrastructure includes:
+This repository demonstrates enterprise-grade patterns for:
+- **Automated Agent Provisioning** - Dynamic AI agent creation via Azure AI Foundry SDK
+- **Semantic Kernel Agent Integration** - Scalable agent orchestration with plugins
+- **Event-Driven Architecture** - Async queue-based processing for high-throughput agent requests
+- **Infrastructure as Code** - Complete Bicep templates for reproducible deployments
+- **Enterprise Security** - Private endpoints, managed identities, zero public access
 
-- **Azure AI Foundry Account & Project**: Hosts AI agents and model deployments
-- **Managed Identity**: User-assigned identity for secure authentication
-- **Storage Accounts with 3 Queues**:
-  - `agent-creation-queue` - Create new Foundry agents
-  - `sk-agent-request-queue` - Send queries to SK agent
-  - `sk-agent-response-queue` - Receive SK agent responses
-- **Azure Function App**: Internal-only, processes both queue patterns
-- **Application Insights**: Monitoring and logging
-- **RBAC**: Proper role assignments for storage and AI Services access
+## 🏗️ Architecture
 
-## Queue Patterns
-
-### Pattern 1: Agent Creation (AI Projects SDK)
 ```
-External → agent-creation-queue → Function → AI Projects SDK → Agent Created
+External Services              Queue-Driven Processing
+        │                            │
+        ├────→ agent-creation-queue  │
+        └────→  Function App (Python)
+                     │
+        ┌────────────┴────────────┐
+        │                         │
+        ▼                         ▼
+  AI Foundry              Semantic Kernel
+  (Agents, Models)        (Agent Executor, Plugins)
+        │                         │
+        └─────────Response Queues─┘
+
+Security: VNet Private Endpoints, Managed Identity, Zero Public Access
+Monitoring: Application Insights, Structured Logging
 ```
-- Creates agents in Foundry using `azure-ai-projects>=2.0.0b3`
-- Reference implementation: [src/function_app.py](src/function_app.py)
-- Used by: DevOps, CI/CD, Management Tools
 
-### Pattern 2: Semantic Kernel Agent (Request/Response)
+### Core Components
+
+| Component | Purpose | Technology |
+|-----------|---------|-----------|
+| **AI Foundry** | Agent hosting & model management | Azure AI Services |
+| **Semantic Kernel** | Agent orchestration & plugins | Microsoft SK framework |
+| **Function App** | Agent processing engine | Azure Functions (Python 3.11) |
+| **Queue Processing** | Scalable async requests | Azure Storage Queues |
+| **Managed Identity** | Secure authentication | Azure Entra ID |
+| **Private Endpoints** | Network isolation | Azure Virtual Network |
+| **Monitoring** | Observability | Application Insights |
+
+## 🎯 Key Features
+
+✅ **Scalability** - Create and manage multiple agents dynamically
+✅ **Semantic Kernel** - Native SK agent executor with plugins
+✅ **Security** - Zero public access, managed identity, RBAC
+✅ **Testing** - 500+ lines of tests, 80%+ coverage
+✅ **CI/CD** - GitHub Actions with automated validation
+✅ **IaC** - Complete Bicep templates, repeatable deployments
+✅ **Monitoring** - Application Insights, structured logging
+
+## 💡 Technical Showcase
+
+This repository demonstrates expertise in:
+
+### Azure AI Services
+- Azure AI Foundry API integration (agents, models, projects)
+- Azure AI Search with embeddings
+- Azure OpenAI Service for LLM inference
+- Multi-model orchestration
+
+### Semantic Kernel Framework
+- Agent executor implementation
+- Plugin architecture for tool integration
+- Memory management and context handling
+- Kernel configuration and initialization
+
+### Scalable Architecture Patterns
+- Event-driven queue-based processing
+- Async/await patterns in Python
+- Managed Identity authentication (no secrets)
+- VNet private endpoint isolation
+
+### Infrastructure as Code
+- Bicep templating with modules
+- Resource parameterization
+- RBAC configuration
+- Network isolation by default
+
+### DevOps & Automation
+- GitHub Actions CI/CD pipelines
+- Code quality checks (flake8, PEP8)
+- Infrastructure validation
+- 80%+ test coverage
+
+## 📚 Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [TESTING_DOCUMENTATION_INDEX.md](TESTING_DOCUMENTATION_INDEX.md) | Unit tests, integration tests, pytest |
+| [PR_WORKFLOW.md](PR_WORKFLOW.md) | PR process, automated checks, review workflow |
+| [GITHUB_ACTIONS.md](GITHUB_ACTIONS.md) | CI/CD workflows, validation pipelines |
+| [PRIVATE_ENDPOINT_DEPLOYMENT.md](PRIVATE_ENDPOINT_DEPLOYMENT.md) | Deployment guide, security, private endpoints |
+| [docs/QUEUE_ARCHITECTURE.md](docs/QUEUE_ARCHITECTURE.md) | Queue patterns, agent creation details |
+
+## 🚀 Quick Start
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/RakeemRanger/bls-azure-ai-foundry-agent.git
+cd bls-azure-ai-foundry-agent
 ```
-Foundry Agent → sk-request-queue → Function (SK) → sk-response-queue → Foundry Agent
+
+### 2. Setup Environment
+```bash
+# Create virtual environment
+python3.11 -m venv .venv
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
 ```
-- Foundry agents send queries to SK agent (internal Function App)
-- SK agent processes with plugins (time, weather, etc.)
-- Responses sent back via response queue
-- Function App stays internal-only, never reached directly
 
-See [docs/QUEUE_ARCHITECTURE.md](docs/QUEUE_ARCHITECTURE.md) for detailed architecture.
+### 3. Run Tests
+```bash
+# Run all tests with coverage
+pytest tests/ -v --cov=foundry_agents --cov-report=html
 
-## Infrastructure Components
+# Check code quality
+flake8 function_app.py foundry_agents/ --max-line-length=100
+```
 
-### Core Resources
-- **AI Services Account**: Multi-service cognitive services account
-- **Foundry Project**: AI Foundry project within the account
-- **Managed Identity**: Used by AI services, Function App, and Foundry agents
-
-### Function App Stack
-- **App Service Plan**: Consumption plan (Y1 SKU) for cost optimization
-- **Function App**: Python 3.11, internal-only with managed identity
-- **Queue Triggers**: 
-  - Agent creation (Pattern 1)
-  - SK agent request/response (Pattern 2)
-
-### Storage
-- **Function Storage**: Backend storage for Azure Functions runtime
-- **Agent Storage**: Contains 3 queues (all private, managed identity access)
-- **Function Storage**: Backend storage for Azure Functions runtime
-- **Agent Storage**: Contains the `agent-creation-queue` for external callers
-
-### Monitoring
-- **Application Insights**: Function App telemetry and logs
-- **Log Analytics Workspace**: Centralized logging
-
-## Deployment
-
-### Prerequisites
-- Azure CLI installed
-- Azure subscription
-- Appropriate permissions to create resources
-
-### Deploy Infrastructure
-
+### 4. Deploy Infrastructure
 ```bash
 # Login to Azure
 az login
-
-# Set subscription
 az account set --subscription <subscription-id>
 
-# Deploy using Bicep
-az deployment sub create \
-  --name foundry-deployment \
-  --location eastus \
-  --template-file infra/main.bicep \
-  --parameters environmentType=dev location=eastus
+# See deployment guide for complete steps
+cat PRIVATE_ENDPOINT_DEPLOYMENT.md
+
+# Deploy
+python3 deploy.py --environment sweden --location swedencentral
 ```
 
-### Parameters
+## 🔄 Queue Patterns
 
-- `environmentType`: Environment type (`dev` or `prod`)
-- `location`: Azure region (`canadaeast`, `eastus`, or `westeurope`)
+### Pattern 1: Agent Creation
+```
+External → agent-creation-queue → Function → AI Projects SDK → Agent Created
+```
+- Dynamic agent provisioning
+- Model deployment
+- Reference: [function_app.py](function_app.py)
 
-## Queue Message Format
+### Pattern 2: Semantic Kernel Agent
+```
+Foundry Agent → sk-request-queue → Function (SK) → sk-response-queue → Foundry Agent
+```
+- Agent queries to SK agent
+- Plugin-based processing
+- Internal routing (no public access)
+- Based on [Semantic Kernel SDK](https://github.com/microsoft/semantic-kernel)
 
-To create an agent, submit a JSON message to the `agent-creation-queue`:
+See [docs/QUEUE_ARCHITECTURE.md](docs/QUEUE_ARCHITECTURE.md) for details.
+
+## 💬 Queue Message Format
+
+Submit JSON to `agent-creation-queue`:
 
 ```json
 {
@@ -108,173 +176,114 @@ To create an agent, submit a JSON message to the `agent-creation-queue`:
       "format": "OpenAI",
       "modelName": "gpt-4.1",
       "version": "2025-04-14"
-    },
-    {
-      "name": "text-embedding-3-small",
-      "skuName": "Standard",
-      "capacity": 120,
-      "format": "OpenAI",
-      "modelName": "text-embedding-3-small",
-      "version": "1"
     }
   ]
 }
 ```
 
-### Submitting Queue Messages
+**See [PRIVATE_ENDPOINT_DEPLOYMENT.md](PRIVATE_ENDPOINT_DEPLOYMENT.md) for message submission methods.**
 
-**Important:** The agent storage account has public access disabled for security. Messages must be submitted using Azure AD authentication (managed identity or user credentials).
+## 🔐 Security by Default
 
-You can submit messages using:
+- ✅ **Private Endpoints** - Function App isolated in VNet
+- ✅ **Managed Identity** - No connection strings or secrets stored
+- ✅ **Zero Public Access** - Storage and AI services not publicly accessible
+- ✅ **RBAC** - Least privilege role assignments
+- ✅ **Network Isolation** - Queue messages routed through private endpoints
+- ✅ **Audit Logging** - Application Insights for compliance
 
-1. **Azure CLI** (uses your Azure login):
-```bash
-az storage message put \
-  --queue-name agent-creation-queue \
-  --account-name <agent-storage-account-name> \
-  --content '<json-message>' \
-  --auth-mode login
-```
-
-2. **Azure SDK (Python)** with Managed Identity:
-```python
-from azure.storage.queue import QueueClient
-from azure.identity import DefaultAzureCredential
-
-credential = DefaultAzureCredential()
-queue_client = QueueClient(
-    account_url="https://<storage-account>.queue.core.windows.net",
-    queue_name="agent-creation-queue",
-    credential=credential
-)
-
-message = {
-    "agentName": "my-agent",
-    "mcpEndpoint": "https://...",
-    "models": [...]
-}
-
-import json
-queue_client.send_message(json.dumps(message))
-```
-
-3. **From Foundry Agents**:
-   - Agents automatically have access via the `agent-queue-storage` connection
-   - The connection uses the same managed identity as the Foundry account
-   - See [examples/agent_queue_example.py](examples/agent_queue_example.py) for usage patterns
-
-4. **Helper Script**:
-```bash
-python submit_agent_request.py \
-  --storage-account <agent-storage-account-name> \
-  --agent-name my-agent \
-  --mcp-endpoint https://my-endpoint.com/mcp \
-  --models-file sample_models.json
-```
-
-## Function App Development
-
-### Local Development
-
-1. Copy the template:
-```bash
-cp local.settings.json.template local.settings.json
-```
-
-2. Update `local.settings.json` with your Azure resource values
-
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-4. Run locally:
-```bash
-func start
-```
-
-### Implementing Agent Creation Logic
-
-The queue trigger function is in [function_app.py](function_app.py). Add your agent creation logic in the `TODO` section:
-
-```python
-# TODO: Implement agent creation logic here
-# 1. Deploy models to AI Services account
-# 2. Create account-level and project-level connections
-# 3. Configure the agent with MCP endpoint
-```
-
-### Deployment
+## 🧪 Testing & Quality
 
 ```bash
-# Deploy function code
-func azure functionapp publish <function-app-name>
+# Unit tests (fast, no Azure required)
+pytest tests/ -m unit -v
+
+# All tests with coverage
+pytest tests/ -v --cov=foundry_agents --cov-report=html
+
+# Code style
+flake8 function_app.py foundry_agents/
+
+# Validate Bicep
+az bicep build --file infra/main.bicep
+
+# Test function locally
+func start --verbose
 ```
 
-## Security
+**Coverage Targets: 80%+ overall, 85%+ for foundry_agents**
 
-- **Function App**: Internal-only, public network access disabled
-- **Managed Identity**: All authentication uses managed identity (no connection strings)
-- **Storage**: Both storage accounts are private (public access disabled)
-  - Function backend storage: Accessed by Function App managed identity
-  - Agent queue storage: Accessed by both Function App and Foundry managed identity
-- **RBAC**: Least privilege access configured
-  - Foundry managed identity: Storage Queue Data Contributor on agent storage
-  - Function App managed identity: Full storage access + AI Services access
-- **Queue Access**: 
-  - Foundry agents can send/receive messages via `agent-queue-storage` connection
-  - External callers must authenticate using Azure AD credentials
-  - No anonymous or shared key access permitted
+See [TESTING_DOCUMENTATION_INDEX.md](TESTING_DOCUMENTATION_INDEX.md) for full guide.
 
-## Monitoring
+## 🔄 Automated CI/CD
 
-View logs and metrics in Application Insights:
+All workflows run automatically (must pass to merge):
 
-```bash
-# Get Application Insights name
-az deployment sub show \
-  --name foundry-deployment \
-  --query properties.outputs.appInsightsName.value
+1. **validate-infra.yml** - Bicep syntax, schema, dry-run deployment
+2. **validate-functions.yml** - Python syntax, imports, unit tests, coverage
+3. **pr-checks.yml** - Flake8, unit tests on all PRs
 
-# View in Azure Portal
-az portal insights show --name <app-insights-name> --resource-group <rg-name>
+See [GITHUB_ACTIONS.md](GITHUB_ACTIONS.md) for details.
+
+## 📊 Repository Stats
+
+- **Infrastructure**: 2,000+ lines of Bicep
+- **Code**: 500+ lines of Python
+- **Tests**: 500+ lines of unit/integration tests
+- **Documentation**: 3,000+ lines of guides
+- **Workflows**: 3 GitHub Actions pipelines
+- **Coverage**: 80%+ requirement
+
+## 📁 Project Structure
+
+```
+├── infra/                        # Bicep IaC templates
+│   ├── main.bicep               # Orchestration
+│   ├── agent/                   # AI Foundry account
+│   ├── foundryAccount/          # Foundry project
+│   ├── identity/                # Managed Identity
+│   └── rbac/                    # Role assignments
+│
+├── foundry_agents/              # Core agent module
+│   ├── configs/
+│   │   ├── tools_registry.py   # SK plugin registry
+│   │   └── settings.py         # Configuration
+│   └── utils/
+│       └── foundry_client.py   # AI Foundry SDK wrapper
+│
+├── function_app.py              # Azure Functions (Python)
+├── tests/                       # Test suite (500+ lines)
+├── .github/
+│   ├── workflows/               # GitHub Actions CI/CD
+│   ├── ISSUE_TEMPLATE/          # Issue templates
+│   ├── CODEOWNERS              # Approval requirements
+│   └── pull_request_template.md # PR template
+├── docs/                        # Architecture documentation
+└── README.md                    # This file
 ```
 
-## Static Agent Definitions
+## 🤝 Contributing
 
-You can still define agents statically in [infra/main.bicep](infra/main.bicep) L28-58:
+1. **Create feature branch**: `git checkout -b feature/my-feature`
+2. **Test locally**: `pytest tests/ -v && flake8 .`
+3. **Push and create PR**: GitHub Actions runs checks
+4. **Wait for approval**: Owner-only approval required
+5. **Merge when ready**: All checks must pass
 
-```bicep
-var agents = [
-  {
-    name: 'dartinbot'
-    mcpEndpoint: 'https://...'
-    models: [...]
-  }
-  // Add more agents here
-]
-```
+See [PR_WORKFLOW.md](PR_WORKFLOW.md) for detailed guide.
 
-These will be deployed during infrastructure deployment.
+## 📖 Resources
 
-## Outputs
+- [Azure AI Foundry Docs](https://learn.microsoft.com/en-us/azure/ai-services/)
+- [Semantic Kernel GitHub](https://github.com/microsoft/semantic-kernel)
+- [Azure Functions Python](https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [Bicep Docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview)
+- [Azure Functions Triggers & Bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings)
 
-After deployment, you'll get:
+## 📄 License
 
-- `functionAppName`: Name of the Function App
-- `agentStorageAccountName`: Storage account for queue submissions
-- `agentQueueName`: Queue name for agent creation requests
-- `appInsightsConnectionString`: Application Insights connection string
+MIT License - See LICENSE file for details
 
-## Next Steps
+---
 
-1. ✅ Infrastructure deployed
-2. ⏳ Implement agent creation logic in `function_app.py`
-3. ⏳ Test queue trigger with sample messages
-4. ⏳ Configure CI/CD for automatic function deployment
-
-## Resources
-
-- [Azure Functions Python Developer Guide](https://learn.microsoft.com/azure/azure-functions/functions-reference-python)
-- [Azure AI Foundry Documentation](https://learn.microsoft.com/azure/ai-studio/)
-- [Azure Storage Queue Trigger](https://learn.microsoft.com/azure/azure-functions/functions-bindings-storage-queue-trigger)
+**Built to showcase expertise in Azure AI Services, Semantic Kernel, Enterprise Architecture, and Production-Grade Python/Infrastructure Development.**

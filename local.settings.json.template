@@ -1,0 +1,16 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AzureWebJobsStorage__accountName": "<function-storage-account-name>",
+    "AGENT_STORAGE_ACCOUNT__queueServiceUri": "https://<agent-storage-account-name>.queue.core.windows.net",
+    "AGENT_CREATION_QUEUE_NAME": "agent-creation-queue",
+    "SK_AGENT_REQUEST_QUEUE_NAME": "sk-agent-request-queue",
+    "SK_AGENT_RESPONSE_QUEUE_NAME": "sk-agent-response-queue",
+    "AI_SERVICES_ENDPOINT": "https://<ai-services-account>.cognitiveservices.azure.com/",
+    "AI_SERVICES_ACCOUNT_NAME": "<ai-services-account-name>",
+    "FOUNDRY_PROJECT_NAME": "dbot",
+    "AZURE_CLIENT_ID": "<managed-identity-client-id>",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "<app-insights-connection-string>"
+  }
+}

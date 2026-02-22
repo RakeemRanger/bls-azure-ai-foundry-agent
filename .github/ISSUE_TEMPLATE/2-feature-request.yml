@@ -1,0 +1,52 @@
+---
+name: Feature Request
+about: Propose a new feature for Azure AI agents
+title: "[FEATURE] "
+labels: enhancement
+assignees: RakeemRanger
+---
+
+## Feature Description
+Clear description of the feature you want to add.
+
+## Use Case
+Why is this feature needed? What problem does it solve?
+
+## Example Scenario
+Concrete example of how this feature would be used:
+
+```
+Example code or workflow here
+```
+
+## Proposed Solution
+How should this feature work?
+
+## Alternative Solutions
+Any alternative approaches you've considered?
+
+## Related Features
+Link to related issues or features: #123
+
+## Impact
+- **Scope**: Agent creation / Semantic Kernel / Infrastructure / Testing
+- **Breaking Changes**: Yes / No
+- **Performance Impact**: None / Minimal / Significant
+- **Security Considerations**: None / Yes (describe)
+
+## Definition of Done
+- [ ] Feature implemented
+- [ ] Tests added (minimum 80% coverage)
+- [ ] Documentation updated
+- [ ] Code review approved
+- [ ] Validation workflows pass
+- [ ] Ready for production
+
+## Additional Context
+Any other context or files about the feature request?
+
+---
+**Note**: Include relevant context:
+- Which pattern: Agent Creation / Semantic Kernel / Both
+- Which tools affected: AI Search / Code Interpreter / etc.
+- Infrastructure changes needed: Yes / No
