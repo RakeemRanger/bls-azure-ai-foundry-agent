@@ -60,19 +60,19 @@ jobs:
       - name: Deploy infrastructure
         run: |
           cd ${{ github.workspace }}
-          python3 deploy.py \
+          python3 scripts/deploy.py \
             --environment ${{ steps.params.outputs.ENVIRONMENT }} \
             --location ${{ steps.params.outputs.LOCATION }} \
-            --infra-only << EOF
-          y
-          EOF
+            --infra-only
       
       - name: Post deployment success
         if: success()
-        run: echo "✅ Infrastructure deployed successfully for environment: ${{ steps.params.outputs.ENVIRONMENT }}"
+        run: |
+          echo "Infrastructure deployed successfully"
+          echo "Environment: ${{ steps.params.outputs.ENVIRONMENT }}"
       
       - name: Post deployment failure
         if: failure()
         run: |
-          echo "❌ Infrastructure deployment failed"
+          echo "Infrastructure deployment failed"
           exit 1
