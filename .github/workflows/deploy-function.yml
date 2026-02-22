@@ -64,13 +64,28 @@ jobs:
           echo "⏳ Waiting for settings to propagate..."
           sleep 15
       
-      - name: Deploy via ZIP
+      - name: Deploy via ZIP (REST API)
         run: |
-          az functionapp deployment source config-zip \
-            --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
+          # Get publish credentials
+          CREDS=$(az functionapp deployment list-publishing-profiles \
             --name ${{ env.FUNCTION_APP_NAME }} \
-            --src function-app.zip \
-            --timeout 300
+            --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
+            --xml | grep -A 3 'publishMethod="ZipDeploy"')
+          
+          USERNAME=$(echo "$CREDS" | grep 'userName=' | sed 's/.*userName="\([^"]*\)".*/\1/')
+          PASSWORD=$(echo "$CREDS" | grep 'userPWD=' | sed 's/.*userPWD="\([^"]*\)".*/\1/')
+          
+          # Deploy via Kudu ZIP API
+          curl -X POST \
+            -u "$USERNAME:$PASSWORD" \
+            --data-binary @function-app.zip \
+            https://${{ env.FUNCTION_APP_NAME }}.scm.azurewebsites.net/api/zipdeploy \
+            -H "Content-Type: application/octet-stream" \
+            --fail \
+            --show-error \
+            --max-time 300
+          
+          echo "✅ Deployment completed"
       
       - name: Restore Function App to private access
         if: always()
