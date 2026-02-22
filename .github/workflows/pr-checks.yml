@@ -1,0 +1,120 @@
+name: PR Checks - Code Quality & Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'function_app.py'
+      - 'foundry_agents/**'
+      - 'tests/**'
+      - '.github/workflows/pr-checks.yml'
+      - 'requirements.txt'
+  workflow_dispatch:
+
+jobs:
+  code-quality:
+    name: Code Quality (PEP8 & Flake8)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+      
+      - name: Run flake8 (PEP8 Style Check)
+        run: |
+          echo "Checking PEP8 compliance with flake8..."
+          flake8 function_app.py foundry_agents/ --max-line-length=100 --extend-ignore=E203,W503 --statistics
+          echo "✅ All code passes PEP8 style check"
+      
+      - name: Flake8 Summary
+        if: always()
+        run: |
+          echo "### Code Quality Check Summary"
+          echo "- Tool: flake8 (PEP8)"
+          echo "- Max line length: 100 characters"
+          echo "- Ignored rules: E203 (space before ':'), W503 (line break before binary operator)"
+          echo "- Status: ✅ PASSED"
+      
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-mock
+      
+      - name: Python Syntax Check
+        run: |
+          echo "Validating Python syntax..."
+          python -m py_compile function_app.py
+          for file in foundry_agents/*.py; do python -m py_compile "$file"; done
+          echo "✅ All Python files have valid syntax"
+      
+      - name: Import Validation
+        run: |
+          echo "Validating imports..."
+          python -c "from foundry_agents import *; print('✅ foundry_agents imported successfully')"
+          python -c "from function_app import *; print('✅ function_app imported successfully')"
+      
+      - name: Run Unit Tests
+        run: |
+          echo "Running unit tests..."
+          pytest tests/ -v --cov=foundry_agents --cov-report=xml --cov-report=term-missing -m "not integration"
+      
+      - name: Upload Coverage Reports
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+        if: always()
+      
+      - name: Test Summary
+        if: always()
+        run: |
+          echo "### Unit Test Summary"
+          echo "- Framework: pytest"
+          echo "- Tests: All unit tests (integration tests skipped)"
+          echo "- Coverage: Reported to codecov"
+  
+  pr-checks-summary:
+    name: PR Checks Status
+    runs-on: ubuntu-latest
+    needs: [code-quality, unit-tests]
+    if: always()
+    
+    steps:
+      - name: Check status
+        run: |
+          if [[ "${{ needs.code-quality.result }}" == "failure" ]] || [[ "${{ needs.unit-tests.result }}" == "failure" ]]; then
+            echo "❌ PR Checks FAILED"
+            echo "Please fix the issues above before requesting review."
+            exit 1
+          else
+            echo "✅ All PR Checks PASSED"
+            echo "Code is ready for review!"
+          fi

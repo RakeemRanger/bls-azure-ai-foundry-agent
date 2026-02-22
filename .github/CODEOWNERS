@@ -1,0 +1,23 @@
+# GitHub Code Owners
+# This file specifies who must review and approve changes to different parts of the codebase
+# Requires approval from specified owners before merging to main
+
+# All files require review from owner
+* @RakeemRanger
+
+# Workflow files require explicit owner approval
+.github/workflows/** @RakeemRanger
+
+# Infrastructure code requires owner approval
+infra/** @RakeemRanger
+
+# Tests require owner approval (to ensure quality standards)
+tests/** @RakeemRanger
+
+# Core application code requires owner approval
+foundry_agents/** @RakeemRanger
+function_app.py @RakeemRanger
+
+# Configuration files require owner approval
+pytest.ini @RakeemRanger
+requirements.txt @RakeemRanger
