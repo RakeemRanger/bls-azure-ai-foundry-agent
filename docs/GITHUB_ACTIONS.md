@@ -131,7 +131,7 @@ Example output:
 1. OIDC token generation may have failed
 2. Check that GitHub Actions secrets are set correctly
 3. Verify OIDC trust relationship in Azure
-4. See [PRIVATE_ENDPOINT_DEPLOYMENT.md](./PRIVATE_ENDPOINT_DEPLOYMENT.md#github-actions-setup) for setup
+See [PRIVATE_ENDPOINT_DEPLOYMENT.md](./PRIVATE_ENDPOINT_DEPLOYMENT.md#github-actions-setup) for setup
 
 ## Validate Functions Workflow
 

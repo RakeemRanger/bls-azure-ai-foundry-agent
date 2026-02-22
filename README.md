@@ -93,10 +93,10 @@ This repository demonstrates expertise in:
 
 | Document | Purpose |
 |----------|---------|
-| [TESTING_DOCUMENTATION_INDEX.md](TESTING_DOCUMENTATION_INDEX.md) | Unit tests, integration tests, pytest |
-| [PR_WORKFLOW.md](PR_WORKFLOW.md) | PR process, automated checks, review workflow |
-| [GITHUB_ACTIONS.md](GITHUB_ACTIONS.md) | CI/CD workflows, validation pipelines |
-| [PRIVATE_ENDPOINT_DEPLOYMENT.md](PRIVATE_ENDPOINT_DEPLOYMENT.md) | Deployment guide, security, private endpoints |
+| [docs/TESTING_DOCUMENTATION_INDEX.md](docs/TESTING_DOCUMENTATION_INDEX.md) | Unit tests, integration tests, pytest |
+| [docs/PR_WORKFLOW.md](docs/PR_WORKFLOW.md) | PR process, automated checks, review workflow |
+| [docs/GITHUB_ACTIONS.md](docs/GITHUB_ACTIONS.md) | CI/CD workflows, validation pipelines |
+| [docs/PRIVATE_ENDPOINT_DEPLOYMENT.md](docs/PRIVATE_ENDPOINT_DEPLOYMENT.md) | Deployment guide, security, private endpoints |
 | [docs/QUEUE_ARCHITECTURE.md](docs/QUEUE_ARCHITECTURE.md) | Queue patterns, agent creation details |
 
 ## 🚀 Quick Start
@@ -133,10 +133,10 @@ az login
 az account set --subscription <subscription-id>
 
 # See deployment guide for complete steps
-cat PRIVATE_ENDPOINT_DEPLOYMENT.md
+cat docs/PRIVATE_ENDPOINT_DEPLOYMENT.md
 
 # Deploy
-python3 deploy.py --environment sweden --location swedencentral
+python3 scripts/deploy.py --environment sweden --location swedencentral
 ```
 
 ## 🔄 Queue Patterns
@@ -181,7 +181,7 @@ Submit JSON to `agent-creation-queue`:
 }
 ```
 
-**See [PRIVATE_ENDPOINT_DEPLOYMENT.md](PRIVATE_ENDPOINT_DEPLOYMENT.md) for message submission methods.**
+**See [docs/PRIVATE_ENDPOINT_DEPLOYMENT.md](docs/PRIVATE_ENDPOINT_DEPLOYMENT.md) for message submission methods.**
 
 ## 🔐 Security by Default
 
@@ -213,7 +213,7 @@ func start --verbose
 
 **Coverage Targets: 80%+ overall, 85%+ for foundry_agents**
 
-See [TESTING_DOCUMENTATION_INDEX.md](TESTING_DOCUMENTATION_INDEX.md) for full guide.
+See [docs/TESTING_DOCUMENTATION_INDEX.md](docs/TESTING_DOCUMENTATION_INDEX.md) for full guide.
 
 ## 🔄 Automated CI/CD
 
@@ -223,7 +223,7 @@ All workflows run automatically (must pass to merge):
 2. **validate-functions.yml** - Python syntax, imports, unit tests, coverage
 3. **pr-checks.yml** - Flake8, unit tests on all PRs
 
-See [GITHUB_ACTIONS.md](GITHUB_ACTIONS.md) for details.
+See [docs/GITHUB_ACTIONS.md](docs/GITHUB_ACTIONS.md) for details.
 
 ## 📊 Repository Stats
 
@@ -237,29 +237,52 @@ See [GITHUB_ACTIONS.md](GITHUB_ACTIONS.md) for details.
 ## 📁 Project Structure
 
 ```
-├── infra/                        # Bicep IaC templates
-│   ├── main.bicep               # Orchestration
-│   ├── agent/                   # AI Foundry account
-│   ├── foundryAccount/          # Foundry project
-│   ├── identity/                # Managed Identity
-│   └── rbac/                    # Role assignments
+├── infra/                           # Bicep IaC templates
+│   ├── main.bicep                  # Orchestration
+│   ├── agent/                      # AI Foundry account
+│   ├── foundryAccount/             # Foundry project
+│   ├── identity/                   # Managed Identity
+│   └── rbac/                       # Role assignments
 │
-├── foundry_agents/              # Core agent module
+├── foundry_agents/                 # Core agent module
 │   ├── configs/
-│   │   ├── tools_registry.py   # SK plugin registry
-│   │   └── settings.py         # Configuration
+│   │   ├── tools_registry.py      # SK plugin registry
+│   │   └── settings.py            # Configuration
 │   └── utils/
-│       └── foundry_client.py   # AI Foundry SDK wrapper
+│       └── foundry_client.py      # AI Foundry SDK wrapper
 │
-├── function_app.py              # Azure Functions (Python)
-├── tests/                       # Test suite (500+ lines)
+├── tests/                          # Test suite (500+ lines)
+├── examples/                       # Example scripts & config
+│   ├── submit_agent_request.py    # Queue message submission
+│   └── sample_models.json         # Sample model config
+│
+├── scripts/                        # Deployment & setup scripts
+│   ├── deploy.py                  # Infrastructure deployment
+│   ├── deploy-function.py         # Function app deployment
+│   ├── deploy.sh                  # Bash deployment wrapper
+│   └── setup-github-oidc.sh       # GitHub OIDC setup
+│
+├── docs/                           # Documentation
+│   ├── TESTING_DOCUMENTATION_INDEX.md
+│   ├── GITHUB_ACTIONS.md
+│   ├── PR_WORKFLOW.md
+│   ├── PRIVATE_ENDPOINT_DEPLOYMENT.md
+│   ├── QUEUE_ARCHITECTURE.md
+│   ├── QUICK_REFERENCE.md
+│   └── ...
+│
 ├── .github/
-│   ├── workflows/               # GitHub Actions CI/CD
-│   ├── ISSUE_TEMPLATE/          # Issue templates
-│   ├── CODEOWNERS              # Approval requirements
-│   └── pull_request_template.md # PR template
-├── docs/                        # Architecture documentation
-└── README.md                    # This file
+│   ├── workflows/                  # GitHub Actions CI/CD
+│   ├── ISSUE_TEMPLATE/             # Issue templates
+│   ├── CODEOWNERS                  # Approval requirements
+│   └── pull_request_template.md    # PR template
+│
+├── function_app.py                 # Azure Functions (Python)
+├── requirements.txt                # Python dependencies
+├── pytest.ini                      # Pytest configuration
+├── host.json                       # Functions configuration
+├── README.md                       # This file
+└── LICENSE                         # MIT License
 ```
 
 ## 🤝 Contributing
@@ -270,7 +293,7 @@ See [GITHUB_ACTIONS.md](GITHUB_ACTIONS.md) for details.
 4. **Wait for approval**: Owner-only approval required
 5. **Merge when ready**: All checks must pass
 
-See [PR_WORKFLOW.md](PR_WORKFLOW.md) for detailed guide.
+See [docs/PR_WORKFLOW.md](docs/PR_WORKFLOW.md) for detailed guide.
 
 ## 📖 Resources
 

@@ -20,7 +20,7 @@ git push origin feature/my-feature
 
 ### 2. PR Template Auto-fills
 
-The PR template at [.github/pull_request_template.md](./.pull_request_template.md) automatically fills with:
+The PR template at [.github/pull_request_template.md](../.github/pull_request_template.md) automatically fills with:
 - Description placeholder
 - Type of change checkboxes
 - Testing checklist
@@ -107,7 +107,7 @@ Once all checks pass (✅):
 **Only owner (@RakeemRanger) can approve PRs to main.**
 
 This is enforced by:
-- [CODEOWNERS](./CODEOWNERS) file
+- [CODEOWNERS](../.github/CODEOWNERS) file
 - GitHub branch protection rules
 - Approval requirement on main branch
 
@@ -173,7 +173,7 @@ Once approved:
 
 ## Code Owners
 
-[CODEOWNERS](./.CODEOWNERS) specifies who must approve changes:
+[CODEOWNERS](../.github/CODEOWNERS) specifies who must approve changes:
 
 ```
 * @RakeemRanger
@@ -422,9 +422,9 @@ Another commit was pushed after approval. Dismiss stale approvals is enabled. Yo
 
 ## References
 
-- [PR Template](./pull_request_template.md)
-- [CODEOWNERS](./CODEOWNERS)
-- [PR Checks Workflow](./workflows/pr-checks.yml)
-- [Validate Infra Workflow](./workflows/validate-infra.yml)
-- [Validate Functions Workflow](./workflows/validate-functions.yml)
-- [Testing Guide](../TESTING.md)
+- [PR Template](../.github/pull_request_template.md)
+- [CODEOWNERS](../.github/CODEOWNERS)
+- [PR Checks Workflow](../.github/workflows/pr-checks.yml)
+- [Validate Infra Workflow](../.github/workflows/validate-infra.yml)
+- [Validate Functions Workflow](../.github/workflows/validate-functions.yml)
+- [Testing Guide](./TESTING.md)
