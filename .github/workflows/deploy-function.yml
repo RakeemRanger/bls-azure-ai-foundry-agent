@@ -1,0 +1,99 @@
+name: Deploy Function App
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'function_app.py'
+      - 'requirements.txt'
+      - 'foundry_agents/**'
+      - '.github/workflows/deploy-function.yml'
+  workflow_dispatch:
+
+env:
+  FUNCTION_APP_NAME: ranger-bls-sweden-func
+  RESOURCE_GROUP_NAME: ranger-bls-sweden-rg
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      id-token: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Azure login (OIDC)
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+      
+      - name: Create deployment package
+        run: |
+          # Create ZIP package with all function code
+          zip -r function-app.zip \
+            function_app.py \
+            host.json \
+            requirements.txt \
+            foundry_agents/ \
+            .python_packages/
+      
+      - name: Temporarily enable Function App public access
+        run: |
+          az functionapp update \
+            --name ${{ env.FUNCTION_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
+            --set publicNetworkAccess=Enabled
+          echo "⏳ Waiting for settings to propagate..."
+          sleep 15
+      
+      - name: Deploy via ZIP
+        run: |
+          az functionapp deployment source config-zip \
+            --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
+            --name ${{ env.FUNCTION_APP_NAME }} \
+            --src function-app.zip \
+            --timeout 300
+      
+      - name: Restore Function App to private access
+        if: always()
+        run: |
+          az functionapp update \
+            --name ${{ env.FUNCTION_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
+            --set publicNetworkAccess=Disabled
+          echo "🔒 Restored Function App to private access"
+      
+      - name: Verify deployment
+        run: |
+          az functionapp show \
+            --name ${{ env.FUNCTION_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
+            --query "name" -o tsv
+      
+      - name: Post deployment success
+        if: success()
+        run: echo "✅ Function app deployed successfully to ${{ env.FUNCTION_APP_NAME }}"
+      
+      - name: Post deployment failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed"
+          exit 1

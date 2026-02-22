@@ -1,0 +1,7 @@
+azure-functions
+azure-identity
+azure-storage-queue
+azure-keyvault-secrets
+azure-ai-projects>=2.0.0b3
+semantic-kernel>=1.0.0
+

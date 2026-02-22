@@ -1,0 +1,78 @@
+name: Deploy Infrastructure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/**'
+      - '.github/workflows/deploy-infra.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment type (dev, prod, sweden)'
+        required: true
+        default: 'sweden'
+      location:
+        description: 'Azure region'
+        required: true
+        default: 'swedencentral'
+
+env:
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+jobs:
+  deploy-infrastructure:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      id-token: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Azure login (OIDC)
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      - name: Get deployment parameters
+        id: params
+        run: |
+          # Use input values if triggered manually, otherwise use defaults
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+            echo "LOCATION=${{ github.event.inputs.location }}" >> $GITHUB_OUTPUT
+          else
+            echo "ENVIRONMENT=sweden" >> $GITHUB_OUTPUT
+            echo "LOCATION=swedencentral" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Deploy infrastructure
+        run: |
+          cd ${{ github.workspace }}
+          python3 deploy.py \
+            --environment ${{ steps.params.outputs.ENVIRONMENT }} \
+            --location ${{ steps.params.outputs.LOCATION }} \
+            --infra-only << EOF
+          y
+          EOF
+      
+      - name: Post deployment success
+        if: success()
+        run: echo "✅ Infrastructure deployed successfully for environment: ${{ steps.params.outputs.ENVIRONMENT }}"
+      
+      - name: Post deployment failure
+        if: failure()
+        run: |
+          echo "❌ Infrastructure deployment failed"
+          exit 1
