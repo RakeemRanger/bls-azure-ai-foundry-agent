@@ -201,10 +201,11 @@ def main():
     
     args = parser.parse_args()
     
-    # Change to script directory
+    # Change to repository root (parent of scripts directory)
     script_dir = Path(__file__).parent
+    repo_root = script_dir.parent
     import os
-    os.chdir(script_dir)
+    os.chdir(repo_root)
     
     # Check Azure CLI
     check_azure_cli()
