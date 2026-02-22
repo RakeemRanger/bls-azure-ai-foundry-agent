@@ -66,24 +66,30 @@ jobs:
       
       - name: Deploy via ZIP (REST API)
         run: |
-          # Get publish credentials
-          CREDS=$(az functionapp deployment list-publishing-profiles \
+          # Get function app publishing credentials using managed identity
+          PUBLISH_PROFILE=$(az functionapp deployment list-publishing-profiles \
             --name ${{ env.FUNCTION_APP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
-            --xml | grep -A 3 'publishMethod="ZipDeploy"')
+            --xml)
           
-          USERNAME=$(echo "$CREDS" | grep 'userName=' | sed 's/.*userName="\([^"]*\)".*/\1/')
-          PASSWORD=$(echo "$CREDS" | grep 'userPWD=' | sed 's/.*userPWD="\([^"]*\)".*/\1/')
+          # Extract username and password from XML
+          USERNAME=$(echo "$PUBLISH_PROFILE" | grep -oP 'publishMethod="ZipDeploy".*?userName="\K[^"]+' | head -1)
+          PASSWORD=$(echo "$PUBLISH_PROFILE" | grep -oP 'publishMethod="ZipDeploy".*?userPWD="\K[^"]+' | head -1)
           
-          # Deploy via Kudu ZIP API
+          if [ -z "$USERNAME" ] || [ -z "$PASSWORD" ]; then
+            echo "Failed to extract publishing credentials"
+            exit 1
+          fi
+          
+          # Deploy via REST API
           curl -X POST \
-            -u "$USERNAME:$PASSWORD" \
+            --basic -u "$USERNAME:$PASSWORD" \
             --data-binary @function-app.zip \
-            https://${{ env.FUNCTION_APP_NAME }}.scm.azurewebsites.net/api/zipdeploy \
+            "https://${{ env.FUNCTION_APP_NAME }}.scm.azurewebsites.net/api/zipdeploy" \
             -H "Content-Type: application/octet-stream" \
-            --fail \
-            --show-error \
-            --max-time 300
+            -v \
+            --max-time 300 \
+            --fail-with-body
           
           echo "✅ Deployment completed"
       

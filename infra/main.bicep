@@ -41,6 +41,7 @@ var functionAppName = '${resourceNamePrefix}-${environmentType}-func'
 var appServicePlanName = '${resourceNamePrefix}-${environmentType}-asp'
 var appInsightsName = '${resourceNamePrefix}-${environmentType}-ai-insights'
 var workspaceName = '${resourceNamePrefix}-${environmentType}-log'
+var vnetName = '${resourceNamePrefix}-${environmentType}-vnet'
 
 // ── Queue Names ──
 var agentCreationQueueName = 'agent-creation-queue'
@@ -86,6 +87,16 @@ var agents = [
 resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: location
+}
+
+// ── 0. Virtual Network ──
+module network 'network/network.bicep' = {
+  name: 'network-deployment'
+  scope: rg
+  params: {
+    vnetName: vnetName
+    location: location
+  }
 }
 
 // ── 1. Managed Identity ──
@@ -237,6 +248,22 @@ module functionAppRbac 'rbac/functionAppRbac.bicep' = {
   ]
 }
 
+// ── 12. Private Endpoint for Function App ──
+module functionAppPrivateEndpoint 'network/privateEndpoint.bicep' = {
+  name: 'function-app-pe-deployment'
+  scope: rg
+  params: {
+    privateEndpointName: '${functionAppName}-pe'
+    serviceResourceId: functionApp.outputs.functionAppId
+    serviceType: 'functionApp'
+    subnetId: network.outputs.subnetId
+    vnetId: network.outputs.vnetId
+    location: location
+  }
+  dependsOn: [
+    functionApp
+  ]
+}
 // ── Outputs ──
 output resourceGroupName string = rg.name
 output accountName string = foundryAccount.outputs.accountName
