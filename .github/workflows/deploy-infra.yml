@@ -67,10 +67,12 @@ jobs:
       
       - name: Post deployment success
         if: success()
-        run: echo "✅ Infrastructure deployed successfully for environment: ${{ steps.params.outputs.ENVIRONMENT }}"
+        run: |
+          echo "Infrastructure deployed successfully"
+          echo "Environment: ${{ steps.params.outputs.ENVIRONMENT }}"
       
       - name: Post deployment failure
         if: failure()
         run: |
-          echo "❌ Infrastructure deployment failed"
+          echo "Infrastructure deployment failed"
           exit 1
