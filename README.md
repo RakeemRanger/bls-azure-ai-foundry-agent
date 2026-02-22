@@ -93,6 +93,7 @@ This repository demonstrates expertise in:
 
 | Document | Purpose |
 |----------|---------|
+| [docs/REPOSITORY_STRUCTURE.md](docs/REPOSITORY_STRUCTURE.md) | **Start here** - Guide to finding everything in the repo |
 | [docs/TESTING_DOCUMENTATION_INDEX.md](docs/TESTING_DOCUMENTATION_INDEX.md) | Unit tests, integration tests, pytest |
 | [docs/PR_WORKFLOW.md](docs/PR_WORKFLOW.md) | PR process, automated checks, review workflow |
 | [docs/GITHUB_ACTIONS.md](docs/GITHUB_ACTIONS.md) | CI/CD workflows, validation pipelines |
