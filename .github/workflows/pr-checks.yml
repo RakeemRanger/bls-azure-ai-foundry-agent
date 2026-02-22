@@ -4,12 +4,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - 'function_app.py'
-      - 'foundry_agents/**'
-      - 'tests/**'
-      - '.github/workflows/pr-checks.yml'
-      - 'requirements.txt'
   workflow_dispatch:
 
 jobs:
