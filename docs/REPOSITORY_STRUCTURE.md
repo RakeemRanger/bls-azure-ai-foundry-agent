@@ -2,7 +2,15 @@
 
 **Quick reference for finding things in this repository.**
 
-## 📍 Root Level (Essential Files Only)
+## � TL;DR (Quick Start)
+
+- **New to the project?** → Start with [README.md](../README.md)
+- **Want to write tests?** → Check [docs/test/TESTING_DOCUMENTATION_INDEX.md](test/TESTING_DOCUMENTATION_INDEX.md)
+- **Deploying?** → See [docs/deployment/PRIVATE_ENDPOINT_DEPLOYMENT.md](deployment/PRIVATE_ENDPOINT_DEPLOYMENT.md)
+- **Architecture?** → Read [docs/infra/QUEUE_ARCHITECTURE.md](infra/QUEUE_ARCHITECTURE.md)
+- **Contributing?** → Follow [docs/PR_WORKFLOW.md](PR_WORKFLOW.md)
+
+## �📍 Root Level (Essential Files Only)
 
 ```
 README.md                           # Start here - project overview

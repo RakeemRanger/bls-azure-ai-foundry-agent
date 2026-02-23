@@ -8,9 +8,14 @@ import subprocess
 import json
 import argparse
 import sys
+import os
 from pathlib import Path
 from typing import Optional, List, Dict
 import time
+
+# Resolve repository root (parent of scripts/ directory)
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BICEP_TEMPLATE = os.path.join(REPO_ROOT, 'infra', 'main.bicep')
 
 # Colors for output
 GREEN = '\033[0;32m'
@@ -110,18 +115,24 @@ def deploy_infrastructure(environment: str, location: str, deployment_name: Opti
     print(f"  Location: {location}")
     print()
     
-    # Confirm deployment
-    response = input("Do you want to proceed with the deployment? (y/n) ")
-    if response.lower() != 'y':
-        print_warning("Deployment cancelled")
-        sys.exit(0)
+    # Confirm deployment (skip if --yes flag used)
+    if not getattr(deploy_infrastructure, '_skip_confirm', False):
+        try:
+            response = input("Do you want to proceed with the deployment? (y/n) ")
+            if response.lower() != 'y':
+                print_warning("Deployment cancelled")
+                sys.exit(0)
+        except EOFError:
+            # In non-interactive mode (e.g., GitHub Actions), assume yes
+            print_warning("No terminal input available - proceeding with deployment")
     
-    # Deploy
+    # Deploy (use absolute path so it works from any working directory)
+    print_info(f"Using Bicep template: {BICEP_TEMPLATE}")
     cmd = [
         "az", "deployment", "sub", "create",
         "--name", deployment_name,
         "--location", location,
-        "--template-file", "infra/main.bicep",
+        "--template-file", BICEP_TEMPLATE,
         "--parameters", params_file,
         "--output", "table"
     ]
@@ -191,13 +202,16 @@ def main():
                         help="GitHub branch to deploy from (default: main)")
     parser.add_argument("--enable-github-deploy", action="store_true",
                         help="Enable automatic deployment from GitHub")
+    parser.add_argument("-y", "--yes", action="store_true",
+                        help="Skip confirmation prompts (for automation/CI-CD)")
     
     args = parser.parse_args()
     
-    # Change to script directory
-    script_dir = Path(__file__).parent
-    import os
-    os.chdir(script_dir)
+    # Change to repository root so relative references work
+    os.chdir(REPO_ROOT)
+    print_info(f"Working directory: {os.getcwd()}")
+    print_info(f"Bicep template: {BICEP_TEMPLATE}")
+    print()
     
     # Check Azure CLI
     check_azure_cli()
@@ -235,9 +249,18 @@ def main():
         
         if not args.infra_only:
             print()
-            response = input("Deploy function code to Function App? (y/n) ")
-            if response.lower() == 'y':
+            if args.yes:
+                # Non-interactive mode - auto-deploy function code
+                print_info("Auto-deploying function code (--yes flag)")
                 deploy_function_code(outputs["functionAppName"], outputs["resourceGroupName"])
+            else:
+                try:
+                    response = input("Deploy function code to Function App? (y/n) ")
+                    if response.lower() == 'y':
+                        deploy_function_code(outputs["functionAppName"], outputs["resourceGroupName"])
+                except EOFError:
+                    # In non-interactive mode, skip function deployment
+                    print_warning("No terminal input available - skipping function code deployment")
     
     print()
     print_info("Deployment complete!")
