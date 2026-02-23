@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'infra/**'
+      - 'scripts/deploy.py'
       - '.github/workflows/deploy-infra.yml'
   workflow_dispatch:
     inputs:
