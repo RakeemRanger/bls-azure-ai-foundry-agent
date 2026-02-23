@@ -13,6 +13,10 @@ from pathlib import Path
 from typing import Optional, List, Dict
 import time
 
+# Resolve repository root (parent of scripts/ directory)
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BICEP_TEMPLATE = os.path.join(REPO_ROOT, 'infra', 'main.bicep')
+
 # Colors for output
 GREEN = '\033[0;32m'
 YELLOW = '\033[1;33m'
@@ -122,12 +126,13 @@ def deploy_infrastructure(environment: str, location: str, deployment_name: Opti
             # In non-interactive mode (e.g., GitHub Actions), assume yes
             print_warning("No terminal input available - proceeding with deployment")
     
-    # Deploy
+    # Deploy (use absolute path so it works from any working directory)
+    print_info(f"Using Bicep template: {BICEP_TEMPLATE}")
     cmd = [
         "az", "deployment", "sub", "create",
         "--name", deployment_name,
         "--location", location,
-        "--template-file", "infra/main.bicep",
+        "--template-file", BICEP_TEMPLATE,
         "--parameters", params_file,
         "--output", "table"
     ]
@@ -202,18 +207,10 @@ def main():
     
     args = parser.parse_args()
     
-    # Change to repository root (parent of scripts directory)
-    # Using os.path for better compatibility across environments
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    repo_root = os.path.dirname(script_dir)
-    
-    print_info(f"Script location: {script_dir}")
-    print_info(f"Changing to repo root: {repo_root}")
-    
-    os.chdir(repo_root)
-    
-    print_info(f"Current working directory: {os.getcwd()}")
-    print_info(f"Bicep template path: {os.path.join(os.getcwd(), 'infra/main.bicep')}")
+    # Change to repository root so relative references work
+    os.chdir(REPO_ROOT)
+    print_info(f"Working directory: {os.getcwd()}")
+    print_info(f"Bicep template: {BICEP_TEMPLATE}")
     print()
     
     # Check Azure CLI
